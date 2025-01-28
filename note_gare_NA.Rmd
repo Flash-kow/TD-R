@@ -1,0 +1,53 @@
+---
+title: "Notes des Gares de Nouvelle Aquitaine"
+author: "Manon Doher"
+date: "2025-01-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r typo123, echo=FALSE}
+library(readxl)
+barometre_sncf_2019 <- read_excel("E:/Cours/5_R/donnees/barometre_sncf_2019.xlsx")
+typo123 <- barometre_sncf_2019 [barometre_sncf_2019$Typologie_gare =='123' & barometre_sncf_2019$Agence =="Nelle Aquitaine",]
+
+typo123$moyenneGare <- rowMeans(typo123[,c("Infos","Deplacement", "Proprete", "Agreable", "Satisfaction", "Services")])
+
+data <- typo123[]
+knitr::kable(data,
+ caption = "Table with kable")
+```
+
+
+
+## Statistiques descrptives des notes toutes gares confondues
+```{r summary, echo=FALSE}
+library(readxl)
+library(tidyr)
+
+barometre_sncf_2019 <- read_excel("E:/Cours/5_R/donnees/barometre_sncf_2019.xlsx")
+typo123 <- barometre_sncf_2019 [barometre_sncf_2019$Typologie_gare =='123' & barometre_sncf_2019$Agence =="Nelle Aquitaine",]
+
+typo123$moyenneGare <- rowMeans(typo123[,c("Infos","Deplacement", "Proprete", "Agreable", "Satisfaction", "Services")])
+summary(typo123$moyenneGare)
+```
+
+## Notes par type et gare
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyr)
+library(ggplot2)
+library(readxl)
+
+barometre_sncf_2019 <- read_excel("E:/Cours/5_R/donnees/barometre_sncf_2019.xlsx")
+typo123 <- barometre_sncf_2019 [barometre_sncf_2019$Typologie_gare =='123' & barometre_sncf_2019$Agence =="Nelle Aquitaine",]
+
+graphNoteGare <-typo123 [ ,c("Gare", "Infos", "Deplacement", "Proprete", "Agreable", "Satisfaction", "Services")]
+
+groupNoteGare <- graphNoteGare  %>% pivot_longer(cols=c("Infos", "Deplacement", "Proprete", "Agreable", "Satisfaction", "Services"), names_to='type_note', values_to='Note')
+
+ggplot(data=groupNoteGare, aes(x=type_note,y=Note,fill=type_note)) + geom_bar(stat="identity") + facet_wrap(~Gare) + ggtitle("Notes par gare de Nouvelle Aquitaine") + theme(plot.title = element_text(family="Trebuchet MS", face="bold", size=20, hjust=1, color="#555555")) +theme_minimal() +theme(axis.line = element_blank(), axis.text.x = element_blank(), axis.ticks = element_blank())+ expand_limits(y = c(0, 10))
+```
+
